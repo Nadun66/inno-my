@@ -199,7 +199,6 @@ export const localPortalService = {
         onConnectionChange(false);
         source?.close();
         if (!closed) {
-          // Probe token validity and reconnect with backoff
           this.fetchTeamSnapshot()
               .then((snap) => {
                 if (!closed) {

@@ -3,6 +3,7 @@ dist
 functions/lib
 functions/node_modules
 server/data/*.json
+server/serviceAccountKey.json
 .env
 .env.local
 *.log
