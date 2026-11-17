@@ -97,8 +97,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onAdminAuthChange }) => {
           setSnapshot(snap);
           onAdminAuthChange?.({
             isAdmin: true,
-            eventStatus: snap.eventSettings.eventStatus,
-            queuePaused: snap.eventSettings.queuePaused,
+            eventStatus: snap?.eventSettings?.eventStatus,
+            queuePaused: snap?.eventSettings?.queuePaused,
             connected: true,
           });
         },
@@ -126,7 +126,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onAdminAuthChange }) => {
     setLoginLoading(true);
     try {
       const res = await portalApi.adminLogin(passcode.trim());
-      if (res.snapshot) setSnapshot(res.snapshot);
+      if (res?.snapshot) setSnapshot(res.snapshot);
       setAuthenticated(true);
       setPasscode('');
     } catch (err) {
@@ -141,7 +141,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onAdminAuthChange }) => {
     setBusyAction(true);
     setFeedback(null);
     try {
-      const nextPaused = !snapshot.eventSettings.queuePaused;
+      const nextPaused = !snapshot.eventSettings?.queuePaused;
       await portalApi.adminToggleQueuePause(
           nextPaused,
           nextPaused
@@ -256,7 +256,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onAdminAuthChange }) => {
   };
 
   const filteredTeams = useMemo(() => {
-    if (!snapshot) return [];
+    if (!snapshot || !snapshot.teams) return [];
     return snapshot.teams.filter((t) => {
       const q = searchQuery.trim().toLowerCase();
       const matchesSearch =
@@ -367,8 +367,20 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onAdminAuthChange }) => {
     );
   }
 
-  const { teams, queueEntries, groups, drawHistory, eventSettings, auditLogs, serverTime } =
-      snapshot;
+  const teams = snapshot?.teams || [];
+  const queueEntries = snapshot?.queueEntries || [];
+  const groups = snapshot?.groups || [];
+  const drawHistory = snapshot?.drawHistory || [];
+  const eventSettings = snapshot?.eventSettings || {
+    totalTeams: 30,
+    queuePaused: false,
+    currentActiveTeamId: null,
+    completedDraws: 0,
+    lastQueueSequence: 0,
+    eventStatus: 'LIVE'
+  };
+  const auditLogs = snapshot?.auditLogs || [];
+  const serverTime = snapshot?.serverTime || new Date().toISOString();
 
   const activeQueueList = queueEntries.filter(
       (q) => q.status === 'ACTIVE' || q.status === 'WAITING'
