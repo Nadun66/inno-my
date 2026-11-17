@@ -1,0 +1,41 @@
+{
+  "name": "innohack-team-leader-portal",
+  "private": true,
+  "version": "1.0.0",
+  "description": "INNOHACK Season 2026 — Team Leader Login & FIFO Live Group Allocation Portal (SLIIT Kandy Uni)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:server": "tsx server/index.ts",
+    "dev:full": "concurrently -k \"npm run dev:server\" \"npm run dev\"",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4173",
+    "seed:firestore": "tsx scripts/seedFirestore.ts",
+    "verify:system": "node scripts/verify-system.mjs"
+  },
+  "dependencies": {
+    "firebase": "^11.0.2",
+    "firebase-admin": "^14.5.1",
+    "framer-motion": "^11.11.17",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
+    "lucide-react": "^0.460.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.0",
+    "express": "^4.21.1",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "drawQueue",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "sequenceNumber", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "teams",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "assignedGroup", "order": "ASCENDING" },
+        { "fieldPath": "drawOrder", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "drawHistory",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "drawOrder", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "auditLogs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

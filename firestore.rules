@@ -1,0 +1,90 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.role == 'admin';
+    }
+
+    function isTeamOwner(teamId) {
+      return isSignedIn()
+        && request.auth.token.role == 'team_leader'
+        && request.auth.uid == teamId;
+    }
+
+    // -------------------------------------------------------------------------
+    // STRICTLY SERVER-ONLY CREDENTIAL HASHES (Cloud Functions Admin SDK only)
+    // Never readable or writable by any client, not even authenticated users.
+    // -------------------------------------------------------------------------
+    match /teamCredentials/{teamId} {
+      allow read, write: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // TEAMS COLLECTION
+    // Each team leader can ONLY read their own team document.
+    // Admins can read all 30 team documents.
+    // ALL mutations must happen exclusively through Firebase Cloud Functions.
+    // -------------------------------------------------------------------------
+    match /teams/{teamId} {
+      allow read: if isTeamOwner(teamId) || isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // GLOBAL FIFO DRAW QUEUE
+    // Authenticated team leaders and admins can observe real-time queue status.
+    // Note: drawQueue documents only store masked/non-sensitive labels
+    // (teamId, teamLabel, sequenceNumber, status, timestamps) — never codes.
+    // ALL queue admissions, turns, and completions occur in Cloud Functions.
+    // -------------------------------------------------------------------------
+    match /drawQueue/{queueEntryId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // GROUPS COLLECTION (Group A, Group B, Group C — max 10 teams each)
+    // Readable by authenticated participants & admins for live slot counts.
+    // Writable strictly via atomic Cloud Function transactions.
+    // -------------------------------------------------------------------------
+    match /groups/{groupId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // DRAW HISTORY (Immutable permanent record of completed allocations)
+    // -------------------------------------------------------------------------
+    match /drawHistory/{drawId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // EVENT SETTINGS (Global FIFO sequence counter, active team, pause state)
+    // -------------------------------------------------------------------------
+    match /eventSettings/{docId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // AUDIT LOGS (Admin-only visibility, server-only append)
+    // -------------------------------------------------------------------------
+    match /auditLogs/{logId} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    // Default deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
